@@ -2,16 +2,14 @@ package main
 
 import (
 	"bbb-voting-system/internal/delivery/http"
+
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
-var total_votes int = 0
-
 func main() {
-
 	server := http.NewServer()
 	go func() {
 		if err := server.Run(":8080"); err != nil {
