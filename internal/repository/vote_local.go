@@ -4,7 +4,7 @@ type VoteLocalRepository struct {
 	total_votes int
 }
 
-func NewVoteLocalRepository(total_votes int) *VoteLocalRepository {
+func NewVoteLocalRepository() *VoteLocalRepository {
 	return &VoteLocalRepository{total_votes: 0}
 }
 

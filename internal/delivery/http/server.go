@@ -23,7 +23,7 @@ func NewServer() *Server {
 
 	s := &Server{r: r}
 
-	voteRepository := repository.NewVoteLocalRepository(0)
+	voteRepository := repository.NewVoteLocalRepository()
 	voteService := usecases.NewVoteService(voteRepository)
 	voteHandler := NewVoteHandler(voteService)
 
