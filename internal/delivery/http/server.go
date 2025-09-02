@@ -25,9 +25,15 @@ func NewServer(postgres *storage.Postgres) *Server {
 
 	s := &Server{r: r, postgres: postgres}
 
+	participantRepository := repository.NewParticipantPostgresRepository(s.postgres)
+	participantService := usecases.NewParticipantService(participantRepository)
+	participantHandler := NewParticipantHandler(participantService)
+
 	voteRepository := repository.NewVoteLocalRepository()
 	voteService := usecases.NewVoteService(voteRepository)
 	voteHandler := NewVoteHandler(voteService)
+
+	r.POST("/participant", participantHandler.handleAddParticipant)
 
 	r.POST("/vote", voteHandler.handleVote)
 	r.GET("/total_votes", voteHandler.handleTotalVotes)

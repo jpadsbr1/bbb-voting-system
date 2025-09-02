@@ -6,7 +6,7 @@ type BigWallParticipant struct {
 }
 
 type BigWall struct {
-	Participants []BigWallParticipant `json:"participants" binding:"required"`
+	BigWallID string `json:"bigwall_id" binding:"required"`
 }
 
 type BigWallRepository interface {

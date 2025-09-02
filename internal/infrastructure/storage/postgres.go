@@ -35,3 +35,7 @@ func (p *Postgres) Close() {
 	log.Printf("Closing Postgres...")
 	p.pool.Close()
 }
+
+func (p *Postgres) GetPool() *pgxpool.Pool {
+	return p.pool
+}
