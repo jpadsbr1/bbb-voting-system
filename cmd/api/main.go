@@ -3,7 +3,7 @@ package main
 import (
 	"bbb-voting-system/internal/config"
 	"bbb-voting-system/internal/delivery/http"
-	"bbb-voting-system/internal/storage"
+	"bbb-voting-system/internal/infrastructure/storage"
 
 	"log"
 	"os"

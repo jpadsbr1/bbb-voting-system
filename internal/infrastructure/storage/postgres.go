@@ -12,9 +12,19 @@ type Postgres struct {
 }
 
 func NewPostgres(postgres_url string) *Postgres {
-	pool, err := pgxpool.New(context.Background(), postgres_url)
+	dsn, err := pgxpool.ParseConfig(postgres_url)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	pool, err := pgxpool.NewWithConfig(context.Background(), dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = pool.Ping(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to ping database: %v\n", err)
 	}
 
 	log.Printf("Connecting to Postgres...")

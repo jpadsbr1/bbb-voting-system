@@ -1,8 +1,8 @@
 package http
 
 import (
+	"bbb-voting-system/internal/infrastructure/storage"
 	"bbb-voting-system/internal/repository"
-	"bbb-voting-system/internal/storage"
 	"bbb-voting-system/internal/usecases"
 
 	"context"
