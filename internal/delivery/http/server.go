@@ -34,6 +34,7 @@ func NewServer(postgres *storage.Postgres) *Server {
 	voteHandler := NewVoteHandler(voteService)
 
 	r.POST("/participant", participantHandler.handleAddParticipant)
+	r.GET("/participants", participantHandler.handleGetAllParticipants)
 
 	r.POST("/vote", voteHandler.handleVote)
 	r.GET("/total_votes", voteHandler.handleTotalVotes)

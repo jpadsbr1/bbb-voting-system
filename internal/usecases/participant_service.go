@@ -14,6 +14,6 @@ func (p *ParticipantService) AddParticipant(name string) error {
 	return p.participantRepository.AddParticipant(name)
 }
 
-func (p *ParticipantService) GetAllParticipants() ([]domain.Participant, error) {
+func (p *ParticipantService) GetAllParticipants() ([]*domain.Participant, error) {
 	return p.participantRepository.GetAllParticipants()
 }

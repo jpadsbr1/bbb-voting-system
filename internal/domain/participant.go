@@ -11,5 +11,5 @@ type Participant struct {
 
 type ParticipantRepository interface {
 	AddParticipant(name string) error
-	GetAllParticipants() ([]Participant, error)
+	GetAllParticipants() ([]*Participant, error)
 }

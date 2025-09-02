@@ -34,3 +34,15 @@ func (h *ParticipantHandler) handleAddParticipant(c *gin.Context) {
 		"message": fmt.Sprintf("Participant %s added successfully", participantRequest.Name),
 	})
 }
+
+func (h *ParticipantHandler) handleGetAllParticipants(c *gin.Context) {
+	participants, err := h.participantService.GetAllParticipants()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"participants": participants,
+	})
+}
