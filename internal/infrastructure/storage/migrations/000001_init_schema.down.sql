@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS votes;
+DROP TABLE IF EXISTS participants_bigwall;
+DROP TABLE IF EXISTS bigwall;
+DROP TABLE IF EXISTS participants;

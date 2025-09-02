@@ -17,9 +17,13 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd/api
 FROM scratch
 
 WORKDIR /app
+
+# Copiar binário da etapa de build e .env
 COPY --from=builder /builder/main .
 COPY --from=builder /builder/.env .
 
+# Expor porta
 EXPOSE 8080
 
+# Executar binário
 CMD ["/app/main"]
