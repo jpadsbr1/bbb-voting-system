@@ -1,15 +1,20 @@
 package domain
 
-type BigWallParticipant struct {
-	Participant Participant `json:"participant" binding:"required"`
-	Votes       int         `json:"votes" binding:"required"`
+import "time"
+
+type BigWallRequest struct {
+	ParticipantIDs []string `json:"participant_ids" binding:"required"`
 }
 
 type BigWall struct {
-	BigWallID string `json:"bigwall_id" binding:"required"`
+	BigWallID string    `json:"bigwall_id" binding:"required"`
+	StartTime time.Time `json:"start_time" binding:"required"`
+	EndTime   time.Time `json:"end_time"`
+	IsActive  bool      `json:"is_active" binding:"required"`
 }
 
 type BigWallRepository interface {
-	GetBigWallInfo() (BigWall, error)
-	CreateBigWall(Participants []Participant) (BigWall, error)
+	CreateBigWall(ParticipantIDs []string) (*BigWall, error)
+	GetBigWallInfo() (*BigWall, error)
+	EndBigWall(BigWallID string) (*BigWall, error)
 }

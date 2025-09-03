@@ -7,10 +7,9 @@ CREATE TABLE participants (
 -- Big Wall
 CREATE TABLE bigwall (
     bigwall_id CHAR(36) PRIMARY KEY,
-    start_time TIMESTAMPTZ NOT NULL,
+    start_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     end_time TIMESTAMPTZ,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Relation Participant_BigWall
