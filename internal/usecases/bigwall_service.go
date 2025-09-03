@@ -45,3 +45,7 @@ func (b *BigWallService) CreateBigWall(ParticipantIDs []string) (*domain.BigWall
 func (b *BigWallService) GetBigWallInfo() (*domain.BigWall, error) {
 	return b.bigWallRepository.GetBigWallInfo()
 }
+
+func (b *BigWallService) EndBigWall(BigWallID string) (*domain.BigWall, error) {
+	return b.bigWallRepository.EndBigWall(BigWallID)
+}

@@ -46,3 +46,16 @@ func (h *BigWallHandler) handleGetBigWallInfo(c *gin.Context) {
 		"bigWall": bigWall,
 	})
 }
+
+func (h *BigWallHandler) handleEndBigWall(c *gin.Context) {
+	bigWallID := c.Param("bigWallID")
+	bigWall, err := h.bigWallService.EndBigWall(bigWallID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"bigWall": bigWall,
+	})
+}

@@ -69,5 +69,24 @@ func (r *BigWallPostgresRepository) GetBigWallInfo() (*domain.BigWall, error) {
 }
 
 func (r *BigWallPostgresRepository) EndBigWall(bigWallID string) (*domain.BigWall, error) {
-	return nil, nil
+	bigWall := &domain.BigWall{}
+
+	endBigWallQuery := `UPDATE bigwall
+		SET is_active = false,
+		end_time = NOW()
+		WHERE bigwall_id = $1
+		AND is_active = true
+		RETURNING bigwall_id, start_time, end_time, is_active`
+
+	if err := r.postgres.GetPool().QueryRow(context.Background(),
+		endBigWallQuery, bigWallID).Scan(
+		&bigWall.BigWallID,
+		&bigWall.StartTime,
+		&bigWall.EndTime,
+		&bigWall.IsActive,
+	); err != nil {
+		return nil, err
+	}
+
+	return bigWall, nil
 }
