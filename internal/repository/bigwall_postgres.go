@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"context"
-	"time"
 
 	uuid "github.com/nu7hatch/gouuid"
 )
@@ -27,11 +26,11 @@ func (r *BigWallPostgresRepository) CreateBigWall(ParticipantIDs []string) (*dom
 		log.Fatal("error:", err)
 	}
 
-	createBigWallQuery := `INSERT INTO bigwall(bigwall_id, start_time)
-		VALUES ($1, $2) RETURNING bigwall_id, start_time, is_active`
+	createBigWallQuery := `INSERT INTO bigwall(bigwall_id)
+		VALUES ($1) RETURNING bigwall_id, start_time, is_active`
 
 	if err := r.postgres.GetPool().QueryRow(context.Background(),
-		createBigWallQuery, bigwall_id, time.Now().Format(time.RFC3339)).Scan(
+		createBigWallQuery, bigwall_id).Scan(
 		&bigWall.BigWallID,
 		&bigWall.StartTime,
 		&bigWall.IsActive,
@@ -55,7 +54,22 @@ func (r *BigWallPostgresRepository) CreateBigWall(ParticipantIDs []string) (*dom
 }
 
 func (r *BigWallPostgresRepository) GetBigWallInfo() (*domain.BigWall, error) {
-	return nil, nil
+	bigWall := &domain.BigWall{}
+
+	getBigWallInfoQuery := `SELECT bigwall_id, start_time, end_time, is_active
+		FROM bigwall WHERE is_active = true`
+
+	if err := r.postgres.GetPool().QueryRow(context.Background(),
+		getBigWallInfoQuery).Scan(
+		&bigWall.BigWallID,
+		&bigWall.StartTime,
+		&bigWall.EndTime,
+		&bigWall.IsActive,
+	); err != nil {
+		return nil, err
+	}
+
+	return bigWall, nil
 }
 
 func (r *BigWallPostgresRepository) EndBigWall(bigWallID string) (*domain.BigWall, error) {

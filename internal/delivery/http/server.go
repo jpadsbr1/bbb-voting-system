@@ -41,6 +41,7 @@ func NewServer(postgres *storage.Postgres) *Server {
 	r.GET("/participants", participantHandler.handleGetAllParticipants)
 
 	r.POST("/bigwall/create", bigWallHandler.handleCreateBigWall)
+	r.GET("/bigwall", bigWallHandler.handleGetBigWallInfo)
 
 	r.POST("/vote", voteHandler.handleVote)
 	r.GET("/total_votes", voteHandler.handleTotalVotes)

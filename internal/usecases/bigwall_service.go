@@ -13,3 +13,7 @@ func NewBigWallService(bigWallRepository domain.BigWallRepository) *BigWallServi
 func (b *BigWallService) CreateBigWall(ParticipantIDs []string) (*domain.BigWall, error) {
 	return b.bigWallRepository.CreateBigWall(ParticipantIDs)
 }
+
+func (b *BigWallService) GetBigWallInfo() (*domain.BigWall, error) {
+	return b.bigWallRepository.GetBigWallInfo()
+}
