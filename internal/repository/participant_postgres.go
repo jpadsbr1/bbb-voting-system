@@ -3,11 +3,8 @@ package repository
 import (
 	"bbb-voting-system/internal/domain"
 	"bbb-voting-system/internal/infrastructure/storage"
-	"log"
 
 	"context"
-
-	uuid "github.com/nu7hatch/gouuid"
 )
 
 type ParticipantPostgresRepository struct {
@@ -18,18 +15,21 @@ func NewParticipantPostgresRepository(postgres *storage.Postgres) *ParticipantPo
 	return &ParticipantPostgresRepository{postgres: postgres}
 }
 
-func (r *ParticipantPostgresRepository) AddParticipant(name string) error {
-	participant_id, err := uuid.NewV4()
-	if err != nil {
-		log.Fatal("error:", err)
+func (r *ParticipantPostgresRepository) AddParticipant(ParticipantID string, name string) (*domain.Participant, error) {
+	participant := &domain.Participant{}
+
+	addParticipantQuery := `INSERT INTO participants(participant_id, name) VALUES ($1, $2)
+		RETURNING participant_id, name`
+
+	if err := r.postgres.GetPool().QueryRow(context.Background(),
+		addParticipantQuery, ParticipantID, name).Scan(
+		&participant.ParticipantID,
+		&participant.Name,
+	); err != nil {
+		return nil, err
 	}
 
-	if _, err := r.postgres.GetPool().Exec(context.Background(),
-		"INSERT INTO participants(participant_id, name) VALUES ($1, $2)", participant_id, name); err != nil {
-		return err
-	}
-
-	return err
+	return participant, nil
 }
 
 func (r *ParticipantPostgresRepository) GetAllParticipants() ([]*domain.Participant, error) {

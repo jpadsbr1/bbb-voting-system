@@ -4,7 +4,6 @@ import (
 	"bbb-voting-system/internal/domain"
 	"bbb-voting-system/internal/usecases"
 
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,14 +24,14 @@ func (h *ParticipantHandler) handleAddParticipant(c *gin.Context) {
 		return
 	}
 
-	err := h.participantService.AddParticipant(participantRequest.Name)
+	Participant, err := h.participantService.AddParticipant(participantRequest.Name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": fmt.Sprintf("Participant %s added successfully", participantRequest.Name),
+		"Participant": Participant,
 	})
 }
 

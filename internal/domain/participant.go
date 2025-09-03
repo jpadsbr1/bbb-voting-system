@@ -10,6 +10,6 @@ type Participant struct {
 }
 
 type ParticipantRepository interface {
-	AddParticipant(name string) error
+	AddParticipant(ParticipantID string, name string) (*Participant, error)
 	GetAllParticipants() ([]*Participant, error)
 }
