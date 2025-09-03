@@ -3,8 +3,11 @@ package repository
 import (
 	"bbb-voting-system/internal/domain"
 	"bbb-voting-system/internal/infrastructure/storage"
+	"log"
 
 	"context"
+
+	uuid "github.com/nu7hatch/gouuid"
 )
 
 type ParticipantPostgresRepository struct {
@@ -16,8 +19,15 @@ func NewParticipantPostgresRepository(postgres *storage.Postgres) *ParticipantPo
 }
 
 func (r *ParticipantPostgresRepository) AddParticipant(name string) error {
-	_, err := r.postgres.GetPool().Exec(context.Background(),
-		"INSERT INTO participants(name) VALUES ($1)", name)
+	participant_id, err := uuid.NewV4()
+	if err != nil {
+		log.Fatal("error:", err)
+	}
+
+	if _, err := r.postgres.GetPool().Exec(context.Background(),
+		"INSERT INTO participants(participant_id, name) VALUES ($1, $2)", participant_id, name); err != nil {
+		return err
+	}
 
 	return err
 }

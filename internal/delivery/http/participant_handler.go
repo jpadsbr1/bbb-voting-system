@@ -3,6 +3,7 @@ package http
 import (
 	"bbb-voting-system/internal/domain"
 	"bbb-voting-system/internal/usecases"
+
 	"fmt"
 	"net/http"
 
@@ -18,7 +19,7 @@ func NewParticipantHandler(participantService *usecases.ParticipantService) *Par
 }
 
 func (h *ParticipantHandler) handleAddParticipant(c *gin.Context) {
-	var participantRequest domain.ParticipantRequest
+	var participantRequest *domain.ParticipantRequest
 	if err := c.ShouldBindJSON(&participantRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

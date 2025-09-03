@@ -19,7 +19,7 @@ func NewVoteHandler(voteService *usecases.VoteService) *VoteHandler {
 }
 
 func (h *VoteHandler) handleVote(c *gin.Context) {
-	var voteRequest domain.VoteRequest
+	var voteRequest *domain.VoteRequest
 	if err := c.ShouldBindJSON(&voteRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

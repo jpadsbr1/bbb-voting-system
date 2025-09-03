@@ -1,8 +1,6 @@
 package usecases
 
-import (
-	"bbb-voting-system/internal/domain"
-)
+import "bbb-voting-system/internal/domain"
 
 type VoteService struct {
 	voteRepository domain.VoteRepository
