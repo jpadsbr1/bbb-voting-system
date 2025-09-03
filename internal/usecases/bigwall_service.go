@@ -1,6 +1,11 @@
 package usecases
 
-import "bbb-voting-system/internal/domain"
+import (
+	"bbb-voting-system/internal/domain"
+	"fmt"
+
+	uuid "github.com/nu7hatch/gouuid"
+)
 
 type BigWallService struct {
 	bigWallRepository domain.BigWallRepository
@@ -11,7 +16,30 @@ func NewBigWallService(bigWallRepository domain.BigWallRepository) *BigWallServi
 }
 
 func (b *BigWallService) CreateBigWall(ParticipantIDs []string) (*domain.BigWall, error) {
-	return b.bigWallRepository.CreateBigWall(ParticipantIDs)
+	if len(ParticipantIDs) < 2 {
+		return nil, fmt.Errorf("error: A Big Wall must contain at least 2 participants")
+	}
+
+	if _, err := b.bigWallRepository.GetBigWallInfo(); err == nil {
+		return nil, fmt.Errorf("error: A Big Wall is already active")
+	}
+
+	BigWallID, err := uuid.NewV4()
+	if err != nil {
+		return nil, err
+	}
+
+	bigWall, err := b.bigWallRepository.CreateBigWallUnit(BigWallID.String(), ParticipantIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := b.bigWallRepository.InsertCrossParticipantBigWall(BigWallID.String(), ParticipantIDs); err != nil {
+		return nil, err
+	}
+
+	return bigWall, nil
+
 }
 
 func (b *BigWallService) GetBigWallInfo() (*domain.BigWall, error) {

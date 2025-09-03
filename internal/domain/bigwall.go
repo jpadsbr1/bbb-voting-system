@@ -14,7 +14,8 @@ type BigWall struct {
 }
 
 type BigWallRepository interface {
-	CreateBigWall(ParticipantIDs []string) (*BigWall, error)
+	CreateBigWallUnit(BigWallID string, ParticipantIDs []string) (*BigWall, error)
+	InsertCrossParticipantBigWall(BigWallID string, ParticipantIDs []string) error
 	GetBigWallInfo() (*BigWall, error)
 	EndBigWall(BigWallID string) (*BigWall, error)
 }
