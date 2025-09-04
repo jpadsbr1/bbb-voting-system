@@ -45,6 +45,7 @@ func NewServer(postgres *storage.Postgres) *Server {
 	r.PATCH("/bigwall/end/:bigWallID", bigWallHandler.handleEndBigWall)
 
 	r.POST("/vote", voteHandler.handleVote)
+	r.GET("/votes/:bigWallID", voteHandler.handleTotalVoteCountByBigWallID)
 
 	return s
 }

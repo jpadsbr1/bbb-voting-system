@@ -34,3 +34,17 @@ func (h *VoteHandler) handleVote(c *gin.Context) {
 		"vote": vote,
 	})
 }
+
+func (h *VoteHandler) handleTotalVoteCountByBigWallID(c *gin.Context) {
+	BigWallID := c.Param("bigWallID")
+
+	totalVoteCount, err := h.voteService.GetTotalVoteCountByBigWallID(BigWallID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"totalVoteCount": totalVoteCount,
+	})
+}
