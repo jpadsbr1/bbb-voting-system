@@ -1,6 +1,7 @@
 CREATE TABLE participants (
     participant_id CHAR(36) PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    is_eliminated BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE bigwall (
