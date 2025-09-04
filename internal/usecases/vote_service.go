@@ -10,10 +10,14 @@ func NewVoteService(voteRepository domain.VoteRepository) *VoteService {
 	return &VoteService{voteRepository: voteRepository}
 }
 
-func (s *VoteService) SaveVote(participantID string) error {
-	return s.voteRepository.SaveVote(participantID)
+func (s *VoteService) Vote(BigWallID string, ParticipantID string) error {
+	return s.voteRepository.Vote(BigWallID, ParticipantID)
 }
 
-func (s *VoteService) GetTotalVotes() (int, error) {
-	return s.voteRepository.GetTotalVotes()
+func (s *VoteService) GetTotalVoteCountByBigWallID(BigWallID string) (int, error) {
+	return s.voteRepository.GetTotalVoteCountByBigWallID(BigWallID)
+}
+
+func (s *VoteService) GetVoteCountByParticipantID(ParticipantID string, BigWallID string) (int, error) {
+	return s.voteRepository.GetVoteCountByParticipantID(ParticipantID, BigWallID)
 }

@@ -33,7 +33,7 @@ func NewServer(postgres *storage.Postgres) *Server {
 	bigWallService := usecases.NewBigWallService(bigWallRepository)
 	bigWallHandler := NewBigWallHandler(bigWallService)
 
-	voteRepository := repository.NewVoteLocalRepository()
+	voteRepository := repository.NewVotePostgresRepository()
 	voteService := usecases.NewVoteService(voteRepository)
 	voteHandler := NewVoteHandler(voteService)
 
