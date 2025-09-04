@@ -48,3 +48,24 @@ func (h *VoteHandler) handleTotalVoteCountByBigWallID(c *gin.Context) {
 		"totalVoteCount": totalVoteCount,
 	})
 }
+
+func (h *VoteHandler) handleGetVoteCountByParticipantID(c *gin.Context) {
+	voteCountRequest := domain.VoteRequest{}
+
+	if err := c.ShouldBindJSON(&voteCountRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	voteCountByParticipantID, err := h.voteService.GetVoteCountByParticipantID(voteCountRequest.ParticipantID, voteCountRequest.BigWallID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"ParticipantID": voteCountRequest.ParticipantID,
+		"BigWallID":     voteCountRequest.BigWallID,
+		"voteCount":     voteCountByParticipantID,
+	})
+}
