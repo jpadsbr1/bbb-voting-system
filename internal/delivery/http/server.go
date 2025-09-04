@@ -33,7 +33,7 @@ func NewServer(postgres *storage.Postgres) *Server {
 	bigWallService := usecases.NewBigWallService(bigWallRepository)
 	bigWallHandler := NewBigWallHandler(bigWallService)
 
-	voteRepository := repository.NewVotePostgresRepository()
+	voteRepository := repository.NewVotePostgresRepository(s.postgres)
 	voteService := usecases.NewVoteService(voteRepository)
 	voteHandler := NewVoteHandler(voteService)
 
@@ -45,7 +45,6 @@ func NewServer(postgres *storage.Postgres) *Server {
 	r.PATCH("/bigwall/end/:bigWallID", bigWallHandler.handleEndBigWall)
 
 	r.POST("/vote", voteHandler.handleVote)
-	r.GET("/total_votes", voteHandler.handleTotalVotes)
 
 	return s
 }

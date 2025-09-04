@@ -10,7 +10,7 @@ func NewVoteService(voteRepository domain.VoteRepository) *VoteService {
 	return &VoteService{voteRepository: voteRepository}
 }
 
-func (s *VoteService) Vote(BigWallID string, ParticipantID string) error {
+func (s *VoteService) Vote(BigWallID string, ParticipantID string) (*domain.Vote, error) {
 	return s.voteRepository.Vote(BigWallID, ParticipantID)
 }
 

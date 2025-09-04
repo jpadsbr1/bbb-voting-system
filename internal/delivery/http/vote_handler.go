@@ -5,7 +5,6 @@ import (
 	"bbb-voting-system/internal/usecases"
 
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,26 +24,13 @@ func (h *VoteHandler) handleVote(c *gin.Context) {
 		return
 	}
 
-	err := h.voteService.SaveVote(voteRequest.ParticipantID)
+	vote, err := h.voteService.Vote(voteRequest.BigWallID, voteRequest.ParticipantID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"participant_id": voteRequest.ParticipantID,
-		"timestamp":      time.Now().Format(time.RFC3339),
-	})
-}
-
-func (h *VoteHandler) handleTotalVotes(c *gin.Context) {
-	total_votes, err := h.voteService.GetTotalVotes()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"total_votes": total_votes,
+		"vote": vote,
 	})
 }

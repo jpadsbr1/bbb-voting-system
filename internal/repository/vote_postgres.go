@@ -1,6 +1,10 @@
 package repository
 
-import "bbb-voting-system/internal/infrastructure/storage"
+import (
+	"bbb-voting-system/internal/domain"
+	"bbb-voting-system/internal/infrastructure/storage"
+	"context"
+)
 
 type VotePostgresRepository struct {
 	postgres *storage.Postgres
@@ -10,8 +14,23 @@ func NewVotePostgresRepository(postgres *storage.Postgres) *VotePostgresReposito
 	return &VotePostgresRepository{postgres: postgres}
 }
 
-func (v *VotePostgresRepository) Vote(BigWallID string, ParticipantID string) error {
-	return nil
+func (v *VotePostgresRepository) Vote(BigWallID string, ParticipantID string) (*domain.Vote, error) {
+	vote := &domain.Vote{}
+
+	addVoteQuery := `INSERT INTO votes(bigwall_id, participant_id) VALUES ($1, $2)
+		RETURNING vote_id, bigwall_id, participant_id, created_at`
+
+	if err := v.postgres.GetPool().QueryRow(context.Background(),
+		addVoteQuery, BigWallID, ParticipantID).Scan(
+		&vote.VoteID,
+		&vote.BigWallID,
+		&vote.ParticipantID,
+		&vote.CreatedAt,
+	); err != nil {
+		return nil, err
+	}
+
+	return vote, nil
 }
 
 func (v *VotePostgresRepository) GetTotalVoteCountByBigWallID(BigWallID string) (int, error) {
