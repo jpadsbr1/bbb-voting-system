@@ -10,11 +10,12 @@ import (
 )
 
 type VoteHandler struct {
-	voteService *usecases.VoteService
+	voteService    *usecases.VoteService
+	bigWallService *usecases.BigWallService
 }
 
-func NewVoteHandler(voteService *usecases.VoteService) *VoteHandler {
-	return &VoteHandler{voteService: voteService}
+func NewVoteHandler(voteService *usecases.VoteService, bigWallService *usecases.BigWallService) *VoteHandler {
+	return &VoteHandler{voteService: voteService, bigWallService: bigWallService}
 }
 
 func (h *VoteHandler) handleVote(c *gin.Context) {
@@ -24,7 +25,7 @@ func (h *VoteHandler) handleVote(c *gin.Context) {
 		return
 	}
 
-	vote, err := h.voteService.Vote(voteRequest.BigWallID, voteRequest.ParticipantID)
+	vote, err := h.voteService.Vote(voteRequest.BigWallID, voteRequest.ParticipantID, h.bigWallService)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

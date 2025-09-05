@@ -48,3 +48,21 @@ func (r *ParticipantPostgresRepository) GetAllParticipants() ([]*domain.Particip
 
 	return participants, err
 }
+
+func (r *ParticipantPostgresRepository) EliminateParticipant(ParticipantID string) (*domain.Participant, error) {
+	participant := &domain.Participant{}
+
+	eliminateParticipantQuery := `UPDATE participants SET is_eliminated = true WHERE participant_id = $1
+		RETURNING participant_id, name, is_eliminated`
+
+	if err := r.postgres.GetPool().QueryRow(context.Background(),
+		eliminateParticipantQuery, ParticipantID).Scan(
+		&participant.ParticipantID,
+		&participant.Name,
+		&participant.IsEliminated,
+	); err != nil {
+		return nil, err
+	}
+
+	return participant, nil
+}

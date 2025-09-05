@@ -46,6 +46,32 @@ func (b *BigWallService) GetBigWallInfo() (*domain.BigWall, error) {
 	return b.bigWallRepository.GetBigWallInfo()
 }
 
-func (b *BigWallService) EndBigWall(BigWallID string) (*domain.BigWall, error) {
-	return b.bigWallRepository.EndBigWall(BigWallID)
+func (b *BigWallService) EndBigWall(BigWallID string, p *ParticipantService) (*domain.BigWall, error) {
+	currentBigWall, err := b.bigWallRepository.GetBigWallInfo()
+	if err != nil {
+		return nil, err
+	}
+
+	if currentBigWall.BigWallID != BigWallID {
+		return nil, fmt.Errorf("error: This Big Wall is not active")
+	}
+
+	finishedBigWall, err := b.bigWallRepository.EndBigWall(BigWallID)
+	if err != nil {
+		return nil, err
+	}
+
+	participantID, votes, err := b.bigWallRepository.GetMostVotedParticipants(BigWallID)
+	if err != nil {
+		return nil, err
+	}
+
+	if votes > 0 {
+		_, err = p.EliminateParticipant(participantID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return finishedBigWall, nil
 }

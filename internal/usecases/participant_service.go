@@ -31,3 +31,7 @@ func (p *ParticipantService) AddParticipant(name string) (*domain.Participant, e
 func (p *ParticipantService) GetAllParticipants() ([]*domain.Participant, error) {
 	return p.participantRepository.GetAllParticipants()
 }
+
+func (p *ParticipantService) EliminateParticipant(ParticipantID string) (*domain.Participant, error) {
+	return p.participantRepository.EliminateParticipant(ParticipantID)
+}

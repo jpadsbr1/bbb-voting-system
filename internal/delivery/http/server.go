@@ -31,11 +31,11 @@ func NewServer(postgres *storage.Postgres) *Server {
 
 	bigWallRepository := repository.NewBigWallPostgresRepository(s.postgres)
 	bigWallService := usecases.NewBigWallService(bigWallRepository)
-	bigWallHandler := NewBigWallHandler(bigWallService)
+	bigWallHandler := NewBigWallHandler(bigWallService, participantService)
 
 	voteRepository := repository.NewVotePostgresRepository(s.postgres)
 	voteService := usecases.NewVoteService(voteRepository)
-	voteHandler := NewVoteHandler(voteService)
+	voteHandler := NewVoteHandler(voteService, bigWallService)
 
 	r.POST("/participant", participantHandler.handleAddParticipant)
 	r.GET("/participants", participantHandler.handleGetAllParticipants)

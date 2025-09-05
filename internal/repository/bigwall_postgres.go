@@ -19,13 +19,14 @@ func (r *BigWallPostgresRepository) CreateBigWallUnit(BigWallID string, Particip
 	bigWall := &domain.BigWall{}
 
 	createBigWallQuery := `INSERT INTO bigwall(bigwall_id)
-		VALUES ($1) RETURNING bigwall_id, start_time, is_active`
+		VALUES ($1) RETURNING bigwall_id, start_time, is_active, total_votes`
 
 	if err := r.postgres.GetPool().QueryRow(context.Background(),
 		createBigWallQuery, BigWallID).Scan(
 		&bigWall.BigWallID,
 		&bigWall.StartTime,
 		&bigWall.IsActive,
+		&bigWall.TotalVotes,
 	); err != nil {
 		return nil, err
 	}
@@ -52,7 +53,7 @@ func (r *BigWallPostgresRepository) InsertCrossParticipantBigWall(BigWallID stri
 func (r *BigWallPostgresRepository) GetBigWallInfo() (*domain.BigWall, error) {
 	bigWall := &domain.BigWall{}
 
-	getBigWallInfoQuery := `SELECT bigwall_id, start_time, end_time, is_active
+	getBigWallInfoQuery := `SELECT bigwall_id, start_time, end_time, is_active, total_votes
 		FROM bigwall WHERE is_active = true`
 
 	if err := r.postgres.GetPool().QueryRow(context.Background(),
@@ -61,6 +62,7 @@ func (r *BigWallPostgresRepository) GetBigWallInfo() (*domain.BigWall, error) {
 		&bigWall.StartTime,
 		&bigWall.EndTime,
 		&bigWall.IsActive,
+		&bigWall.TotalVotes,
 	); err != nil {
 		return nil, err
 	}
@@ -76,7 +78,7 @@ func (r *BigWallPostgresRepository) EndBigWall(bigWallID string) (*domain.BigWal
 		end_time = NOW()
 		WHERE bigwall_id = $1
 		AND is_active = true
-		RETURNING bigwall_id, start_time, end_time, is_active`
+		RETURNING bigwall_id, start_time, end_time, is_active, total_votes`
 
 	if err := r.postgres.GetPool().QueryRow(context.Background(),
 		endBigWallQuery, bigWallID).Scan(
@@ -84,9 +86,55 @@ func (r *BigWallPostgresRepository) EndBigWall(bigWallID string) (*domain.BigWal
 		&bigWall.StartTime,
 		&bigWall.EndTime,
 		&bigWall.IsActive,
+		&bigWall.TotalVotes,
 	); err != nil {
 		return nil, err
 	}
 
 	return bigWall, nil
+}
+
+func (r *BigWallPostgresRepository) GetBigWallParticipants(bigWallID string) ([]string, error) {
+	participants := []string{}
+
+	getBigWallParticipantsQuery := `SELECT participant_id, votes
+		FROM participants_bigwall
+		WHERE bigwall_id = $1`
+
+	rows, err := r.postgres.GetPool().Query(context.Background(),
+		getBigWallParticipantsQuery, bigWallID)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var participantID string
+		if err = rows.Scan(&participantID); err != nil {
+			return nil, err
+		}
+		participants = append(participants, participantID)
+	}
+
+	return participants, nil
+}
+
+func (r *BigWallPostgresRepository) GetMostVotedParticipants(bigWallID string) (string, int, error) {
+	var participant_id string
+	var votes int
+
+	getMostVotedParticipantsQuery := `SELECT participant_id, total_votes
+		FROM participants_bigwall
+		WHERE bigwall_id = $1
+		ORDER BY total_votes DESC
+		LIMIT 1`
+
+	if err := r.postgres.GetPool().QueryRow(context.Background(),
+		getMostVotedParticipantsQuery, bigWallID).Scan(
+		&participant_id,
+		&votes,
+	); err != nil {
+		return "", 0, err
+	}
+
+	return participant_id, votes, nil
 }

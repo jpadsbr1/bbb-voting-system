@@ -10,11 +10,12 @@ import (
 )
 
 type BigWallHandler struct {
-	bigWallService *usecases.BigWallService
+	bigWallService     *usecases.BigWallService
+	participantService *usecases.ParticipantService
 }
 
-func NewBigWallHandler(bigWallService *usecases.BigWallService) *BigWallHandler {
-	return &BigWallHandler{bigWallService: bigWallService}
+func NewBigWallHandler(bigWallService *usecases.BigWallService, participantService *usecases.ParticipantService) *BigWallHandler {
+	return &BigWallHandler{bigWallService: bigWallService, participantService: participantService}
 }
 
 func (h *BigWallHandler) handleCreateBigWall(c *gin.Context) {
@@ -49,7 +50,7 @@ func (h *BigWallHandler) handleGetBigWallInfo(c *gin.Context) {
 
 func (h *BigWallHandler) handleEndBigWall(c *gin.Context) {
 	bigWallID := c.Param("bigWallID")
-	bigWall, err := h.bigWallService.EndBigWall(bigWallID)
+	bigWall, err := h.bigWallService.EndBigWall(bigWallID, h.participantService)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

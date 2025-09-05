@@ -36,7 +36,7 @@ func (v *VotePostgresRepository) Vote(BigWallID string, ParticipantID string) (*
 func (v *VotePostgresRepository) GetTotalVoteCountByBigWallID(BigWallID string) (int, error) {
 	var vote_count int
 
-	getVoteCountQuery := `SELECT COUNT(*) FROM votes WHERE bigwall_id = $1`
+	getVoteCountQuery := `SELECT total_votes FROM bigwall WHERE bigwall_id = $1`
 
 	if err := v.postgres.GetPool().QueryRow(context.Background(),
 		getVoteCountQuery, BigWallID).Scan(

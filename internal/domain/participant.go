@@ -13,4 +13,5 @@ type Participant struct {
 type ParticipantRepository interface {
 	AddParticipant(ParticipantID string, name string) (*Participant, error)
 	GetAllParticipants() ([]*Participant, error)
+	EliminateParticipant(ParticipantID string) (*Participant, error)
 }
