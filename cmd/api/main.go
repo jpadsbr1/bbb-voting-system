@@ -3,6 +3,7 @@ package main
 import (
 	"bbb-voting-system/internal/config"
 	"bbb-voting-system/internal/delivery/http"
+	"bbb-voting-system/internal/infrastructure/cache"
 	"bbb-voting-system/internal/infrastructure/storage"
 
 	"log"
@@ -18,7 +19,11 @@ func main() {
 	postgres := storage.NewPostgres(postgres_url)
 	defer postgres.Close()
 
-	server := http.NewServer(postgres)
+	redis_url := config.GetRedisURL()
+	redis := cache.NewRedisClient(redis_url)
+	defer redis.Close()
+
+	server := http.NewServer(postgres, redis)
 	go func() {
 		if err := server.Run(":" + os.Getenv("API_PORT")); err != nil {
 			log.Fatal(err)

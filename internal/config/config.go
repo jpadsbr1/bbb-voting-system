@@ -28,3 +28,11 @@ func GetPostgresURL() string {
 		user, pass, host, port, name,
 	)
 }
+
+func GetRedisURL() string {
+	return fmt.Sprintf(
+		"%s:%s",
+		os.Getenv("REDIS_HOST"),
+		os.Getenv("REDIS_PORT"),
+	)
+}

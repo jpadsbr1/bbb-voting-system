@@ -1,6 +1,7 @@
 package http
 
 import (
+	"bbb-voting-system/internal/infrastructure/cache"
 	"bbb-voting-system/internal/infrastructure/storage"
 	"bbb-voting-system/internal/repository"
 	"bbb-voting-system/internal/usecases"
@@ -17,13 +18,14 @@ type Server struct {
 	r        *gin.Engine
 	http     *http.Server
 	postgres *storage.Postgres
+	redis    *cache.RedisClient
 }
 
-func NewServer(postgres *storage.Postgres) *Server {
+func NewServer(postgres *storage.Postgres, redis *cache.RedisClient) *Server {
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
 
-	s := &Server{r: r, postgres: postgres}
+	s := &Server{r: r, postgres: postgres, redis: redis}
 
 	participantRepository := repository.NewParticipantPostgresRepository(s.postgres)
 	participantService := usecases.NewParticipantService(participantRepository)
