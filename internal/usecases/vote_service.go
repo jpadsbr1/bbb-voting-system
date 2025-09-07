@@ -3,27 +3,46 @@ package usecases
 import (
 	"bbb-voting-system/internal/domain"
 	"fmt"
+	"log"
 )
 
 type VoteService struct {
-	voteRepository domain.VoteRepository
+	voteRepository      domain.VoteRepository
+	voteCacheRepository domain.VoteCacheRepository
 }
 
-func NewVoteService(voteRepository domain.VoteRepository) *VoteService {
-	return &VoteService{voteRepository: voteRepository}
+func NewVoteService(voteRepository domain.VoteRepository, voteCacheRepository domain.VoteCacheRepository) *VoteService {
+	return &VoteService{voteRepository: voteRepository, voteCacheRepository: voteCacheRepository}
 }
 
-func (s *VoteService) Vote(BigWallID string, ParticipantID string, b *BigWallService) (*domain.Vote, error) {
+func (s *VoteService) Vote(BigWallID string, ParticipantID string, b *BigWallService) error {
 	currentBigWall, err := b.GetBigWallInfo()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if currentBigWall.BigWallID != BigWallID {
-		return nil, fmt.Errorf("error: This Big Wall is not active")
+		return fmt.Errorf("error: This Big Wall is not active")
 	}
 
-	return s.voteRepository.Vote(BigWallID, ParticipantID)
+	bigWallParticipants, err := b.GetBigWallParticipants(BigWallID)
+	if err != nil {
+		return err
+	}
+
+	for _, participant := range bigWallParticipants {
+		if participant.ParticipantID == ParticipantID {
+			break
+		} else {
+			return fmt.Errorf("error: Participant %s is not in this Big Wall", ParticipantID)
+		}
+	}
+
+	if err := s.voteCacheRepository.IncrementVote(BigWallID, ParticipantID); err != nil {
+		log.Printf("Error incrementing vote: %v", err)
+	}
+
+	return nil
 }
 
 func (s *VoteService) GetTotalVoteCountByBigWallID(BigWallID string) (int, error) {

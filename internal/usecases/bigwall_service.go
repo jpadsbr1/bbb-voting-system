@@ -2,17 +2,26 @@ package usecases
 
 import (
 	"bbb-voting-system/internal/domain"
+	"bbb-voting-system/internal/infrastructure/worker"
+	"context"
 	"fmt"
+	"log"
+	"time"
 
 	uuid "github.com/nu7hatch/gouuid"
 )
 
 type BigWallService struct {
-	bigWallRepository domain.BigWallRepository
+	bigWallRepository   domain.BigWallRepository
+	voteCacheRepository domain.VoteCacheRepository
+	voteRepository      domain.VoteRepository
+	voteFlusher         *worker.VoteFlusher
+	flusherContext      context.Context
+	flusherCancel       context.CancelFunc
 }
 
-func NewBigWallService(bigWallRepository domain.BigWallRepository) *BigWallService {
-	return &BigWallService{bigWallRepository: bigWallRepository}
+func NewBigWallService(bigWallRepository domain.BigWallRepository, voteCacheRepository domain.VoteCacheRepository, voteRepository domain.VoteRepository) *BigWallService {
+	return &BigWallService{bigWallRepository: bigWallRepository, voteCacheRepository: voteCacheRepository, voteRepository: voteRepository}
 }
 
 func (b *BigWallService) CreateBigWall(ParticipantIDs []string) (*domain.BigWall, error) {
@@ -38,6 +47,11 @@ func (b *BigWallService) CreateBigWall(ParticipantIDs []string) (*domain.BigWall
 		return nil, err
 	}
 
+	b.voteFlusher = worker.NewVoteFlusher(b.voteCacheRepository, b.voteRepository, 5*time.Second)
+	b.flusherContext, b.flusherCancel = context.WithCancel(context.Background())
+
+	go b.voteFlusher.Start(b.flusherContext, bigWall.BigWallID)
+
 	return bigWall, nil
 
 }
@@ -47,6 +61,11 @@ func (b *BigWallService) GetBigWallInfo() (*domain.BigWall, error) {
 }
 
 func (b *BigWallService) EndBigWall(BigWallID string, p *ParticipantService) (*domain.BigWall, error) {
+	if b.flusherCancel != nil {
+		b.flusherCancel()
+		log.Printf("Flusher stopped for Big Wall %s", BigWallID)
+	}
+
 	currentBigWall, err := b.bigWallRepository.GetBigWallInfo()
 	if err != nil {
 		return nil, err

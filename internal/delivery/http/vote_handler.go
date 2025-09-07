@@ -25,14 +25,14 @@ func (h *VoteHandler) handleVote(c *gin.Context) {
 		return
 	}
 
-	vote, err := h.voteService.Vote(voteRequest.BigWallID, voteRequest.ParticipantID, h.bigWallService)
+	err := h.voteService.Vote(voteRequest.BigWallID, voteRequest.ParticipantID, h.bigWallService)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"vote": vote,
+		"vote": "success",
 	})
 }
 
