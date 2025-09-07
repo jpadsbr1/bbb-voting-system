@@ -94,8 +94,8 @@ func (r *BigWallPostgresRepository) EndBigWall(bigWallID string) (*domain.BigWal
 	return bigWall, nil
 }
 
-func (r *BigWallPostgresRepository) GetBigWallParticipants(bigWallID string) ([]string, error) {
-	participants := []string{}
+func (r *BigWallPostgresRepository) GetBigWallParticipants(bigWallID string) ([]*domain.BigWallParticipant, error) {
+	participants := []*domain.BigWallParticipant{}
 
 	getBigWallParticipantsQuery := `SELECT participant_id, votes
 		FROM participants_bigwall
@@ -109,10 +109,18 @@ func (r *BigWallPostgresRepository) GetBigWallParticipants(bigWallID string) ([]
 
 	for rows.Next() {
 		var participantID string
-		if err = rows.Scan(&participantID); err != nil {
+		var votes int
+
+		if err = rows.Scan(&participantID, &votes); err != nil {
 			return nil, err
 		}
-		participants = append(participants, participantID)
+
+		participant := &domain.BigWallParticipant{
+			ParticipantID: participantID,
+			Votes:         votes,
+		}
+
+		participants = append(participants, participant)
 	}
 
 	return participants, nil
@@ -122,10 +130,10 @@ func (r *BigWallPostgresRepository) GetMostVotedParticipants(bigWallID string) (
 	var participant_id string
 	var votes int
 
-	getMostVotedParticipantsQuery := `SELECT participant_id, total_votes
+	getMostVotedParticipantsQuery := `SELECT participant_id, votes
 		FROM participants_bigwall
 		WHERE bigwall_id = $1
-		ORDER BY total_votes DESC
+		ORDER BY votes DESC
 		LIMIT 1`
 
 	if err := r.postgres.GetPool().QueryRow(context.Background(),
