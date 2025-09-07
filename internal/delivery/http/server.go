@@ -45,6 +45,7 @@ func NewServer(postgres *storage.Postgres, redis *cache.RedisClient) *Server {
 	r.POST("/bigwall/create", bigWallHandler.handleCreateBigWall)
 	r.GET("/bigwall", bigWallHandler.handleGetBigWallInfo)
 	r.PATCH("/bigwall/end/:bigWallID", bigWallHandler.handleEndBigWall)
+	r.GET("/bigwall/participants/:bigWallID", bigWallHandler.handleGetBigWallParticipants)
 
 	r.POST("/vote", voteHandler.handleVote)
 	r.GET("/votes/total/:bigWallID", voteHandler.handleTotalVoteCountByBigWallID)

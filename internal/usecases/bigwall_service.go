@@ -75,3 +75,7 @@ func (b *BigWallService) EndBigWall(BigWallID string, p *ParticipantService) (*d
 
 	return finishedBigWall, nil
 }
+
+func (b *BigWallService) GetBigWallParticipants(BigWallID string) ([]*domain.BigWallParticipant, error) {
+	return b.bigWallRepository.GetBigWallParticipants(BigWallID)
+}
