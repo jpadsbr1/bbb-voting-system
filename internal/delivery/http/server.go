@@ -29,15 +29,17 @@ func NewServer(postgres *storage.Postgres, redis *cache.RedisClient) *Server {
 
 	participantRepository := repository.NewParticipantPostgresRepository(s.postgres)
 	participantService := usecases.NewParticipantService(participantRepository)
-	participantHandler := NewParticipantHandler(participantService)
-
-	bigWallRepository := repository.NewBigWallPostgresRepository(s.postgres)
-	bigWallService := usecases.NewBigWallService(bigWallRepository)
-	bigWallHandler := NewBigWallHandler(bigWallService, participantService)
 
 	voteRepository := repository.NewVotePostgresRepository(s.postgres)
-	voteService := usecases.NewVoteService(voteRepository)
+	voteCacheRepository := repository.NewVoteRedisRepository(s.redis)
+	voteService := usecases.NewVoteService(voteRepository, voteCacheRepository)
+
+	bigWallRepository := repository.NewBigWallPostgresRepository(s.postgres)
+	bigWallService := usecases.NewBigWallService(bigWallRepository, voteCacheRepository, voteRepository)
+
 	voteHandler := NewVoteHandler(voteService, bigWallService)
+	participantHandler := NewParticipantHandler(participantService)
+	bigWallHandler := NewBigWallHandler(bigWallService, participantService)
 
 	r.POST("/participant", participantHandler.handleAddParticipant)
 	r.GET("/participants", participantHandler.handleGetAllParticipants)
