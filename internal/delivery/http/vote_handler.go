@@ -70,3 +70,17 @@ func (h *VoteHandler) handleGetVoteCountByParticipantID(c *gin.Context) {
 		"voteCount":     voteCountByParticipantID,
 	})
 }
+
+func (h *VoteHandler) handleGetVoteHourlyCountByBigWallID(c *gin.Context) {
+	BigWallID := c.Param("bigWallID")
+
+	voteHourlyCountByBigWallID, err := h.voteService.GetVoteHourlyCountByBigWallID(BigWallID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"voteHourlyCountByBigWallID": voteHourlyCountByBigWallID,
+	})
+}

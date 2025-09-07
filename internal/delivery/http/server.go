@@ -52,6 +52,7 @@ func NewServer(postgres *storage.Postgres, redis *cache.RedisClient) *Server {
 	r.POST("/vote", voteHandler.handleVote)
 	r.GET("/votes/total/:bigWallID", voteHandler.handleTotalVoteCountByBigWallID)
 	r.GET("/votes/participant", voteHandler.handleGetVoteCountByParticipantID)
+	r.GET("/votes/hourly/:bigWallID", voteHandler.handleGetVoteHourlyCountByBigWallID)
 
 	return s
 }

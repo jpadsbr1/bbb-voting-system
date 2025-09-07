@@ -52,3 +52,7 @@ func (s *VoteService) GetTotalVoteCountByBigWallID(BigWallID string) (int, error
 func (s *VoteService) GetVoteCountByParticipantID(ParticipantID string, BigWallID string) (int, error) {
 	return s.voteRepository.GetVoteCountByParticipantID(ParticipantID, BigWallID)
 }
+
+func (s *VoteService) GetVoteHourlyCountByBigWallID(BigWallID string) ([]*domain.VoteHourlyCount, error) {
+	return s.voteRepository.GetVoteHourlyCountByBigWallID(BigWallID)
+}

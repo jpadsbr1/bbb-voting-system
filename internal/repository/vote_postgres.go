@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"bbb-voting-system/internal/domain"
 	"bbb-voting-system/internal/infrastructure/storage"
 	"context"
 	"time"
@@ -91,4 +92,35 @@ func (v *VotePostgresRepository) GetVoteCountByParticipantID(ParticipantID strin
 	}
 
 	return vote_count, nil
+}
+
+func (v *VotePostgresRepository) GetVoteHourlyCountByBigWallID(BigWallID string) ([]*domain.VoteHourlyCount, error) {
+	var voteHourlyCounts []*domain.VoteHourlyCount
+
+	getVoteHourlyCountQuery := `SELECT participant_id, total_votes, hour FROM votes_hourly WHERE bigwall_id = $1`
+
+	rows, err := v.postgres.GetPool().Query(context.Background(), getVoteHourlyCountQuery, BigWallID)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var participantID string
+		var votes int
+		var hour time.Time
+
+		if err := rows.Scan(&participantID, &votes, &hour); err != nil {
+			return nil, err
+		}
+
+		voteHourlyCount := &domain.VoteHourlyCount{
+			ParticipantID: participantID,
+			Votes:         votes,
+			Hour:          hour.Format("2006-01-02-15:00:00"),
+		}
+
+		voteHourlyCounts = append(voteHourlyCounts, voteHourlyCount)
+	}
+
+	return voteHourlyCounts, nil
 }
