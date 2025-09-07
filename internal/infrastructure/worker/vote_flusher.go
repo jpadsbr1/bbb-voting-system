@@ -32,6 +32,10 @@ func (v *VoteFlusher) Start(ctx context.Context, BigWallID string) {
 	}
 }
 
+func (v *VoteFlusher) FlushOnce(BigWallID string) {
+	v.flush(BigWallID)
+}
+
 func (v *VoteFlusher) flush(BigWallID string) {
 	log.Println("Running unified flusher...")
 

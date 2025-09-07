@@ -61,6 +61,10 @@ func (b *BigWallService) GetBigWallInfo() (*domain.BigWall, error) {
 }
 
 func (b *BigWallService) EndBigWall(BigWallID string, p *ParticipantService) (*domain.BigWall, error) {
+	if b.voteFlusher != nil {
+		b.voteFlusher.FlushOnce(BigWallID)
+	}
+
 	if b.flusherCancel != nil {
 		b.flusherCancel()
 		log.Printf("Flusher stopped for Big Wall %s", BigWallID)
