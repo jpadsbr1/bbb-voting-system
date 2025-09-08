@@ -155,6 +155,11 @@ git clone https://github.com/seu-usuario/bbb-voting-api.git
 cd bbb-voting-api
 ```
 
+### 1.1. Configurar variáveis de ambiente
+```bash
+cp .env.example .env
+```
+
 ### 2. Suba os serviços
 ```bash
 docker-compose up --build
